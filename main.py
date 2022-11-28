@@ -89,6 +89,8 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.initialize()
+        self.count = 0
+        self.count2 = 0
 
     def debounce(self):
         processInput = False
@@ -98,20 +100,34 @@ class MainScreen(Screen):
         self.lastClick = currentTime
         return processInput
 
-    def toggleArm(self):
+    def toggleMagnet(self):
+        if self.count2 % 2 == 0:
+            cyprus.set_pwm_values(2, period_value=100000, compare_value=100000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.count2 = self.count2 + 1
+            print("up")
+        else:
+            cyprus.set_pwm_values(2, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.count2 = self.count2 + 1
+            print("down")
         print("Process arm movement here")
 
-    def toggleMagnet(self):
-        print("Process magnet here")
+    def toggleArm(self):
+        if self.count % 2 == 0:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.count = self.count + 1
+        else:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.count = self.count + 1
         
     def auto(self):
         print("Run the arm automatically here")
 
     def setArmPosition(self, position):
-        print("Move arm here")
+        arm.goTo(int(position) * 50)
 
     def homeArm(self):
-        arm.home(self.homeDirection)
+        arm.go_until_press(0, 100)
+        print("start posistion achived")
         
     def isBallOnTallTower(self):
         print("Determine if ball is on the top tower")
